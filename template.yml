@@ -1,0 +1,10 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Notification Event Triggers POC
+
+Resources:
+  # SQS
+  NotificationEventQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: notification-event-queue
+      MessageRetentionPeriod: 1209600  # 14 days
