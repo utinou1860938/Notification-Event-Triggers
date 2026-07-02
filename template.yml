@@ -2,9 +2,41 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: Notification Event Triggers POC
 
 Resources:
+  # SNS
+  NotificationEventTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: notification-event-topic
+
   # SQS
   NotificationEventQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: notification-event-queue
       MessageRetentionPeriod: 1209600  # 14 days
+
+  # SNS -> SQS Subscription
+  NotificationEventSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref NotificationEventTopic
+      Protocol: sqs
+      Endpoint: !GetAtt NotificationEventQueue.Arn
+      RawMessageDelivery: true
+
+  # SQS Policy (SNS からの送信を許可)
+  NotificationEventQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref NotificationEventQueue
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt NotificationEventQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref NotificationEventTopic
