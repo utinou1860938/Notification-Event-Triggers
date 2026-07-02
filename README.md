@@ -101,6 +101,14 @@ aws cloudformation delete-stack \
   --stack-name notification-event-triggers
 ```
 
+### 検証（SNSへメッセージを送信）
+
+```bash
+aws sns publish \
+    --topic-arn <トピックARN> \
+    --message '{"test": "hello"}'
+```
+
 ## ゴール
 
 - [ ] SES イベント（Bounce / Complaint / Delivery）が SQS に届くことを確認
