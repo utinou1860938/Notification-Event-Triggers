@@ -100,6 +100,20 @@ Resources:
       ResourceRecords:
         - !Sub "10 feedback-smtp.${SesRegion}.amazonses.com"
 
+  # DMARC レコード
+  # v=DMARC1: DMARC バージョン 1 を宣言
+  # p=none: ポリシー。認証失敗時のアクション（none=何もしない/監視のみ, quarantine=隔離, reject=拒否）
+  # 本番では p=reject への段階的移行を推奨
+  SesDmarcRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Sub "_dmarc.${DomainName}"
+      Type: TXT
+      TTL: "300"
+      ResourceRecords:
+        - '"v=DMARC1; p=none;"'
+
   SesConfigurationSet:
     Type: AWS::SES::ConfigurationSet
     Properties:
