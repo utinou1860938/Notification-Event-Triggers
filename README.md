@@ -108,6 +108,42 @@ aws cloudformation delete-stack \
   --stack-name notification-event-triggers
 ```
 
+### SES 送信制御ポリシー（任意：手動作成）
+
+SES コンソール → Identity（ドメイン） → Authorization タブ → Create Policy で以下を設定する。
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::<アカウントID>:root"
+      },
+      "Action": [
+        "ses:SendEmail",
+        "ses:SendRawEmail"
+      ],
+      "Resource": "arn:aws:ses:<リージョン>:<アカウントID>:identity/<ドメイン名>",
+      "Condition": {
+        "StringLike": {
+          "ses:FromAddress": "*@<ドメイン名>"
+        },
+        "ForAllValues:StringLike": {
+          "ses:Recipients": [
+            "<許可する送信先1>",
+            "<許可する送信先2>",
+            "<許可する送信先3>",
+            "*@simulator.amazonses.com"
+          ]
+        }
+      }
+    }
+  ]
+}
+```
+
 ### 検証（SNSへメッセージを送信）
 
 ```bash
