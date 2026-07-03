@@ -152,6 +152,32 @@ aws sns publish \
     --message '{"test": "hello"}'
 ```
 
+### 検証（SESでメールを送信する）
+```bash
+aws ses send-email \
+    --from <送信元メールアドレス> \
+    --destination "ToAddresses=<宛先メールアドレス>" \       
+    --message "Subject={Data=Test Email},Body={Text={Data=Hello World}}"
+    --configuration-set-name notification-event-config
+```
+
+### 検証（SESシミュレーターへメースを送信する）
+```bash
+aws ses send-email \
+    --from <送信元メールアドレス> \
+    --destination "ToAddresses=complaint@simulator.amazonses.com" \
+    --message "Subject={Data=Test},Body={Text={Data=Test email}}" \
+    --configuration-set-name notification-event-config
+```
+
+シミュレーターの種類：
+- complaint@simulator.amazonses.com に送る → Complaint イベントだけが発火
+- bounce@simulator.amazonses.com に送る → Bounce イベントだけが発火
+- success@simulator.amazonses.com に送る → Delivery イベントだけが発火
+- suppressionlist@simulator.amazonses.com → アカウントのSuppression listに登録されている場合にBounceイベントが発火
+- ooto@simulator.amazonses.com → Out of Office（不在通知）イベントが発火
+    
+
 ### 参考にした記事
 - [Amazon SESで送信元と宛先の制限をかけてみたメモ](https://qiita.com/kumeneko/items/423bcf2d0fdefbd54334)
 - [SPFとは？SPFの意味やDKIM・DMARCとの違いを分かりやすく解説](https://am.arara.com/blog/06)
