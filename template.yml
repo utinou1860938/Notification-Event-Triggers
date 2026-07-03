@@ -25,7 +25,7 @@ Resources:
   SesEmailIdentity:
     Type: AWS::SES::EmailIdentity
     Properties:
-      EmailIdentity: uchinou18957@cs.saisoncard.co.jp
+      EmailIdentity: notification-poc.click
 
   SesConfigurationSet:
     Type: AWS::SES::ConfigurationSet
