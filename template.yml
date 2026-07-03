@@ -8,6 +8,44 @@ Resources:
     Properties:
       TopicName: notification-event-topic
 
+  NotificationEventTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref NotificationEventTopic
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ses.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref NotificationEventTopic
+
+  # SES
+  SesEmailIdentity:
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      EmailIdentity: uchinou18957@cs.saisoncard.co.jp
+
+  SesConfigurationSet:
+    Type: AWS::SES::ConfigurationSet
+    Properties:
+      Name: notification-event-config
+
+  SesEventDestination:
+    Type: AWS::SES::ConfigurationSetEventDestination
+    Properties:
+      ConfigurationSetName: !Ref SesConfigurationSet
+      EventDestination:
+        Name: notification-event-destination
+        Enabled: true
+        MatchingEventTypes:
+          - bounce
+          - complaint
+          - delivery
+        SnsDestination:
+          TopicARN: !Ref NotificationEventTopic
+
   # SQS
   NotificationEventQueue:
     Type: AWS::SQS::Queue
