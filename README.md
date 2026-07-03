@@ -68,6 +68,7 @@ SES / EUM → SNS → SQS → ECS（ロングポーリング） → DB 更新
 ## インフラ
 
 CloudFormation で構築する。
+ドメインなどの手動作成のリソースは外部パラメータとして受け取る。
 
 ### 認証確認
 
@@ -82,6 +83,9 @@ aws cloudformation deploy \
   --template-file template.yml \
   --stack-name notification-event-triggers \
   --capabilities CAPABILITY_NAMED_IAM \
+  --parameter-overrides \
+  DomainName=<ドメイン名> \
+  HostedZoneId=<ホストゾーンID> \
   --no-execute-changeset
 ```
 
@@ -91,7 +95,10 @@ aws cloudformation deploy \
 aws cloudformation deploy \
   --template-file template.yml \
   --stack-name notification-event-triggers \
-  --capabilities CAPABILITY_NAMED_IAM
+  --capabilities CAPABILITY_NAMED_IAM \
+  --parameter-overrides \
+  DomainName=<ドメイン名> \
+  HostedZoneId=<ホストゾーンID> \
 ```
 
 ### 削除

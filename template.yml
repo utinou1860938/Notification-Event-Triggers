@@ -1,6 +1,14 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Notification Event Triggers POC
 
+Parameters:
+  DomainName:
+    Type: String
+    Description: SES で使用するドメイン名
+  HostedZoneId:
+    Type: AWS::Route53::HostedZone::Id
+    Description: Route 53 ホストゾーン ID
+
 Resources:
   # SNS
   NotificationEventTopic:
@@ -25,7 +33,37 @@ Resources:
   SesEmailIdentity:
     Type: AWS::SES::EmailIdentity
     Properties:
-      EmailIdentity: notification-poc.click
+      EmailIdentity: !Ref DomainName
+
+  SesDkimRecord1:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !GetAtt SesEmailIdentity.DkimDNSTokenName1
+      Type: CNAME
+      TTL: "300"
+      ResourceRecords:
+        - !GetAtt SesEmailIdentity.DkimDNSTokenValue1
+
+  SesDkimRecord2:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !GetAtt SesEmailIdentity.DkimDNSTokenName2
+      Type: CNAME
+      TTL: "300"
+      ResourceRecords:
+        - !GetAtt SesEmailIdentity.DkimDNSTokenValue2
+
+  SesDkimRecord3:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !GetAtt SesEmailIdentity.DkimDNSTokenName3
+      Type: CNAME
+      TTL: "300"
+      ResourceRecords:
+        - !GetAtt SesEmailIdentity.DkimDNSTokenValue3
 
   SesConfigurationSet:
     Type: AWS::SES::ConfigurationSet
