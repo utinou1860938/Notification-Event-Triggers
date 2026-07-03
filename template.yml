@@ -8,6 +8,10 @@ Parameters:
   HostedZoneId:
     Type: AWS::Route53::HostedZone::Id
     Description: Route 53 ホストゾーン ID
+  SesRegion:
+    Type: String
+    Description: SES を利用するリージョン
+    Default: ap-northeast-1
 
 Resources:
   # SNS
@@ -34,6 +38,8 @@ Resources:
     Type: AWS::SES::EmailIdentity
     Properties:
       EmailIdentity: !Ref DomainName
+      MailFromAttributes:
+        MailFromDomain: !Sub "mail.${DomainName}"
 
   SesDkimRecord1:
     Type: AWS::Route53::RecordSet
@@ -64,6 +70,35 @@ Resources:
       TTL: "300"
       ResourceRecords:
         - !GetAtt SesEmailIdentity.DkimDNSTokenValue3
+
+  # SPF レコード
+  # v=spf1: SPF バージョン 1 を宣言
+  # include:amazonses.com: Amazon SES のメールサーバーからの送信を正当なものとして許可
+  # ~all: 上記以外のサーバーからの送信はソフトフェイル（受信側が迷惑メール扱いにする可能性がある）
+  SesSpfRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Sub "mail.${DomainName}"
+      Type: TXT
+      TTL: "300"
+      ResourceRecords:
+        - '"v=spf1 include:amazonses.com ~all"'
+
+  # MX レコード（カスタム MAIL FROM に必須）
+  # 10: 優先度（数値が小さいほど優先）
+  # feedback-smtp.{region}.amazonses.com: SES がバウンス・苦情の返信メールを受け取るためのエンドポイント
+  # カスタム MAIL FROM を設定すると、受信側がバウンスを返す宛先がこのドメインになるため、
+  # SES がそれを受信できるよう MX レコードで指定する必要がある
+  SesMailFromMxRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Sub "mail.${DomainName}"
+      Type: MX
+      TTL: "300"
+      ResourceRecords:
+        - !Sub "10 feedback-smtp.${SesRegion}.amazonses.com"
 
   SesConfigurationSet:
     Type: AWS::SES::ConfigurationSet
