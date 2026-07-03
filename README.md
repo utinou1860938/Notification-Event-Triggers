@@ -152,6 +152,12 @@ aws sns publish \
     --message '{"test": "hello"}'
 ```
 
+### 参考にした記事
+- [Amazon SESで送信元と宛先の制限をかけてみたメモ](https://qiita.com/kumeneko/items/423bcf2d0fdefbd54334)
+- [SPFとは？SPFの意味やDKIM・DMARCとの違いを分かりやすく解説](https://am.arara.com/blog/06)
+- [IPレピュテーション・ドメインレピュテーションとは？ 違いや確認方法、向上のポイントを解説](EiwAkZgxixSb59tDajc7hM8U45d8CbxhGOJO9JykHJjKMIFp8JJWrxVWTIs0pxoCvxQQAvD_BwE)
+- [Amazon SES の新機能 Virtual Deliverability Manager を使ってみた](https://dev.classmethod.jp/articles/amazon-ses-vdm/)
+
 ## ゴール
 
 - [ ] SES イベント（Bounce / Complaint / Delivery）が SQS に届くことを確認
