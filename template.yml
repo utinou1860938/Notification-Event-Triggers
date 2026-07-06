@@ -31,16 +31,18 @@ Resources:
         - !Ref NotificationEventTopic
       PolicyDocument:
         Statement:
-          - Effect: Allow
+          - Sid: AllowSesVoicePublish
+            Effect: Allow
             Principal:
               Service: ses.amazonaws.com
             Action: sns:Publish
             Resource: !Ref NotificationEventTopic
-#          - Effect: Allow
-#            Principal:
-#              Service: sms-voice.amazonaws.com
-#            Action: sns:Publish
-#            Resource: !Ref NotificationEventTopic
+          - Sid: llowEumVoicePublish
+            Effect: Allow
+            Principal:
+              Service: sms-voice.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref NotificationEventTopic
 
   # SES
   SesEmailIdentity:
@@ -154,17 +156,26 @@ Resources:
     Properties:
       ConfigurationSetName: sms-event-config
       DefaultSenderId: !Ref SmsSenderIdValue
-
-#  SmsEventDestination:
-#    Type: AWS::PinpointSMSVoiceV2::EventDestination
-#    Properties:
-#      ConfigurationSetName: !Ref SmsConfigurationSet
-#      EventDestinationName: sms-event-destination
-#      Enabled: true
-#      MatchingEventTypes:
-#        - ALL
-#      SnsDestination:
-#        TopicArn: !Ref NotificationEventTopic
+      EventDestinations:
+        - EventDestinationName: sms-event-destination
+          Enabled: true
+          MatchingEventTypes:
+            - TEXT_DELIVERED
+            - TEXT_SUCCESSFUL
+            - TEXT_QUEUED
+            - TEXT_PENDING
+            - TEXT_BLOCKED
+            - TEXT_TTL_EXPIRED
+            - TEXT_CARRIER_UNREACHABLE
+            - TEXT_INVALID
+            - TEXT_INVALID_MESSAGE
+            - TEXT_CARRIER_BLOCKED
+            - TEXT_UNREACHABLE
+            - TEXT_SPAM
+            - TEXT_UNKNOWN
+            - TEXT_PROTECT_BLOCKED
+          SnsDestination:
+            TopicArn: !Ref NotificationEventTopic
 
   # SQS
   NotificationEventQueue:
