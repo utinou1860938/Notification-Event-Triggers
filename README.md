@@ -186,6 +186,6 @@ aws ses send-email \
 
 ## ゴール
 
-- [ ] SES イベント（Bounce / Complaint / Delivery）が SQS に届くことを確認
+- [x] SES イベント（Bounce / Complaint / Delivery）が SQS に届くことを確認
 - [ ] EUM イベント（Delivery / Failure 系）が SQS に届くことを確認
 - [ ] 各メッセージの JSON 構造を確認・記録
