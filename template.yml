@@ -32,6 +32,11 @@ Resources:
               Service: ses.amazonaws.com
             Action: sns:Publish
             Resource: !Ref NotificationEventTopic
+#          - Effect: Allow
+#            Principal:
+#              Service: sms-voice.amazonaws.com
+#            Action: sns:Publish
+#            Resource: !Ref NotificationEventTopic
 
   # SES
   SesEmailIdentity:
@@ -132,6 +137,29 @@ Resources:
           - delivery
         SnsDestination:
           TopicARN: !Ref NotificationEventTopic
+
+  # EUM (SMS)
+  SmsSenderId:
+    Type: AWS::SMSVOICE::SenderId
+    Properties:
+      SenderId: NOTIFY-POC
+      IsoCountryCode: JP
+
+#  SmsConfigurationSet:
+#    Type: AWS::PinpointSMSVoiceV2::ConfigurationSet
+#    Properties:
+#      ConfigurationSetName: sms-event-config
+#
+#  SmsEventDestination:
+#    Type: AWS::PinpointSMSVoiceV2::EventDestination
+#    Properties:
+#      ConfigurationSetName: !Ref SmsConfigurationSet
+#      EventDestinationName: sms-event-destination
+#      Enabled: true
+#      MatchingEventTypes:
+#        - ALL
+#      SnsDestination:
+#        TopicArn: !Ref NotificationEventTopic
 
   # SQS
   NotificationEventQueue:
