@@ -12,6 +12,10 @@ Parameters:
     Type: String
     Description: SES を利用するリージョン
     Default: ap-northeast-1
+  SmsSenderIdValue:
+    Description: SMS 送信元 ID
+    Type: String
+    Default: NOTIFY-POC
 
 Resources:
   # SNS
@@ -142,14 +146,15 @@ Resources:
   SmsSenderId:
     Type: AWS::SMSVOICE::SenderId
     Properties:
-      SenderId: NOTIFY-POC
+      SenderId: !Ref SmsSenderIdValue
       IsoCountryCode: JP
 
-#  SmsConfigurationSet:
-#    Type: AWS::PinpointSMSVoiceV2::ConfigurationSet
-#    Properties:
-#      ConfigurationSetName: sms-event-config
-#
+  SmsConfigurationSet:
+    Type: AWS::SMSVOICE::ConfigurationSet
+    Properties:
+      ConfigurationSetName: sms-event-config
+      DefaultSenderId: !Ref SmsSenderIdValue
+
 #  SmsEventDestination:
 #    Type: AWS::PinpointSMSVoiceV2::EventDestination
 #    Properties:
