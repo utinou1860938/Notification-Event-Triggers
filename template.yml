@@ -37,7 +37,7 @@ Resources:
               Service: ses.amazonaws.com
             Action: sns:Publish
             Resource: !Ref NotificationEventTopic
-          - Sid: llowEumVoicePublish
+          - Sid: AllowEumVoicePublish
             Effect: Allow
             Principal:
               Service: sms-voice.amazonaws.com
@@ -176,6 +176,20 @@ Resources:
             - TEXT_PROTECT_BLOCKED
           SnsDestination:
             TopicArn: !Ref NotificationEventTopic
+      ProtectConfigurationId: !Ref SmsProtectConfiguration
+
+  SmsProtectConfiguration:
+    Type: AWS::SMSVOICE::ProtectConfiguration
+    Properties:
+      CountryRuleSet:
+        SMS:
+          - CountryCode: JP
+            ProtectStatus: BLOCK # 特定の電話番号への送信をするため、日本を明示ブロック
+            # 本番では、JP以外の国コードを明示的に BLOCK することが必要
+          - CountryCode: US
+            ProtectStatus: BLOCK
+          - CountryCode: GB
+            ProtectStatus: BLOCK
 
   # SQS
   NotificationEventQueue:
