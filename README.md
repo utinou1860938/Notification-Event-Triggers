@@ -155,8 +155,8 @@ aws sns publish \
 ### 検証（SESでメールを送信する）
 ```bash
 aws ses send-email \
-    --from <送信元メールアドレス> \
-    --destination "ToAddresses=<宛先メールアドレス>" \       
+    --from yumee@notification-poc.click \
+    --destination "ToAddresses=the.second.glide@gmail.com" \       
     --message "Subject={Data=Test Email},Body={Text={Data=Hello World}}"
     --configuration-set-name notification-event-config
 ```
@@ -164,10 +164,31 @@ aws ses send-email \
 ### 検証（SESシミュレーターへメースを送信する）
 ```bash
 aws ses send-email \
-    --from <送信元メールアドレス> \
+    --from mail.notification-poc.click \
     --destination "ToAddresses=complaint@simulator.amazonses.com" \
     --message "Subject={Data=Test},Body={Text={Data=Test email}}" \
     --configuration-set-name notification-event-config
+```
+
+### 検証（EUMでSMSを送信する）
+```bash
+aws pinpoint-sms-voice-v2 send-text-message \
+  --destination-phone-number "<送信先E.164形式電話番号>" \
+  --origination-identity "NOTIFY-POC" \
+  --message-body "テストメッセージです" \
+  --message-type TRANSACTIONAL \
+  --configuration-set-name "sms-event-config"
+```
+
+### 検証（EUMでSMSを送信するが一時的に電電を切りエラーを起こす） TTL 60秒で配信タイムアウトを発生させる場合のコマンド例。
+```bash
+aws pinpoint-sms-voice-v2 send-text-message \
+  --destination-phone-number "<送信先E.164形式電話番号>" \
+  --origination-identity "NOTIFY-POC" \
+  --message-body "到達不可・TTLテストです" \
+  --message-type TRANSACTIONAL \
+  --configuration-set-name "sms-event-config" \
+  --time-to-live 60
 ```
 
 シミュレーターの種類：
@@ -188,5 +209,5 @@ aws ses send-email \
 ## ゴール
 
 - [x] SES イベント（Bounce / Complaint / Delivery）が SQS に届くことを確認
-- [ ] EUM イベント（Delivery / Failure 系）が SQS に届くことを確認
+- [x] EUM イベント（Delivery / Failure 系）が SQS に届くことを確認
 - [ ] 各メッセージの JSON 構造を確認・記録
